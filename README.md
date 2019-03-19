@@ -35,6 +35,12 @@ The import and tile serving processes use 4 threads by default, but this number 
 
     docker run -p 80:80 -e THREADS=24 -v openstreetmap-data:/var/lib/postgresql/10/main -d overv/openstreetmap-tile-server run
 
+## Bookmarks
++ [Benchmarks](./Doc/Benchmarks.md)
++ [Useful Commands](./Doc/UsefulCommands.md)
++ [Links](./Doc/Links.md)
+
+
 ## License
 
 ```
