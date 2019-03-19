@@ -62,6 +62,12 @@ To raise it use `--shm-size` parameter. For example:
 
 For too high values you may notice excessive CPU load and memory usage. It might be that you will have to experimentally find the best values for yourself.
 
+
+## Bookmarks
++ [Benchmarks](./Doc/Benchmarks.md)
++ [Useful Commands](./Doc/UsefulCommands.md)
++ [Links](./Doc/Links.md)
+
 ## License
 
 ```
