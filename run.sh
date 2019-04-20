@@ -21,6 +21,7 @@ fi
 
 if [ "$1" = "import" ]; then
     # Initialize PostgreSQL
+
     CreatePostgressqlConfig
     service postgresql start
     sudo -u postgres createuser renderer
@@ -37,10 +38,10 @@ if [ "$1" = "import" ]; then
     fi
 
     # Import data
-    sudo -u renderer osm2pgsql -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua -C 16348 --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf
+    sudo -u renderer osm2pgsql -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua -C 32768 --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf
     service postgresql stop
 
-    exit 0
+      0
 fi
 
 if [ "$1" = "run" ]; then
