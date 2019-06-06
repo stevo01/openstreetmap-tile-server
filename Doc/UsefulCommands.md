@@ -63,6 +63,13 @@ docker run --rm -e THREADS=16 --detach --name openstreetmap-tile-server --publis
 ```
 docker exec -i -t openstreetmap-tile-server /bin/bash
 ```
+#### show mod-tile status infos
+
+open following url to show mod-tile status informations
+http://lovcalhost:8001/mod_tile
+
+#### show logging infos from rendered, apache
+docker logs -f openstreetmap-tile-server
 
 ## measurements
 
@@ -89,6 +96,15 @@ https://github.com/sysstat/sysstat
 ```
 docker system df -v
 ```
+
+### prerender Tiles
+open bash shell on docker and enter following command to prerender zoomlevel 1-8
+```
+docker exec -i -t openstreetmap-tile-server /bin/bash
+render_list -a -m ajt -z 6 -Z 6 -l 800 -n 12
+```
+
+
 # Benchmarks
 
 ## i/o performance
