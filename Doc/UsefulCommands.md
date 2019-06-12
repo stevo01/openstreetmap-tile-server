@@ -21,6 +21,11 @@ wget -c -P $(pwd)/volumes/download/  http://download.geofabrik.de/europe-latest.
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf.md5
 
+wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-190603.osm.pbf
+
+wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-190603.osm.pbf.md5
+
+
 
 ```
 
