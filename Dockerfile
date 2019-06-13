@@ -63,6 +63,7 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   unzip \
   wget \
   zlib1g-dev \
+  osmosis \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
 && rm -rf /var/lib/{apt,dpkg,cache,log}/
@@ -137,6 +138,11 @@ COPY postgresql.custom.conf.tmpl /etc/postgresql/10/main/
 RUN chown -R postgres:postgres /var/lib/postgresql \
   && chown postgres:postgres /etc/postgresql/10/main/postgresql.custom.conf.tmpl \
   && echo "\ninclude 'postgresql.custom.conf'" >> /etc/postgresql/10/main/postgresql.conf
+
+# copy update scripts
+COPY openstreetmap-tiles-update-expire /usr/bin/
+RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
+    && mkdir /var/log/tiles
 
 # Start running
 COPY run.sh /
