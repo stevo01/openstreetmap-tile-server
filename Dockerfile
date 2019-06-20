@@ -6,6 +6,7 @@ FROM ubuntu:18.04
 # Set up environment
 ENV TZ=UTC
 ENV AUTOVACUUM=on
+ENV AUTOVACUUM=disabled
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install dependencies
@@ -64,6 +65,8 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   wget \
   zlib1g-dev \
   osmosis \
+  osmium-tool \
+  cron \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
 && rm -rf /var/lib/{apt,dpkg,cache,log}/

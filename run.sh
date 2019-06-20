@@ -16,12 +16,12 @@ if [ "$#" -ne 1 ]; then
     echo "    run: Runs Apache and renderd to serve tiles at /tile/{z}/{x}/{y}.png"
     echo "environment variables:"
     echo "    THREADS: defines number of threads used for importing / tile rendering"
+    echo "    UPDATES: consecutive updates (enabled/disabled)"
     exit 1
 fi
 
 if [ "$1" = "import" ]; then
     # Initialize PostgreSQL
-
     CreatePostgressqlConfig
     service postgresql start
     sudo -u postgres createuser renderer
@@ -38,9 +38,18 @@ if [ "$1" = "import" ]; then
     fi
 
     # Import data
-    sudo -u renderer osm2pgsql -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua -C 3072 --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf
+    sudo -u renderer osm2pgsql -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua -C 2048 --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf
     service postgresql stop
 
+    # determine and set osmosis_replication_timestamp
+    osmium fileinfo /data.osm.pbf > /var/lib/mod_tile/data.osm.pbf.info
+    osmium fileinfo /data.osm.pbf | grep 'osmosis_replication_timestamp=' | cut -b35-44 > /var/lib/mod_tile/replication_timestamp.txt
+    REPLICATION_TIMESTAMP=$(cat /var/lib/mod_tile/replication_timestamp.txt)
+
+    sudo -u renderer openstreetmap-tiles-update-expire $REPLICATION_TIMESTAMP
+
+
+    exit 0
 fi
 
 if [ "$1" = "run" ]; then
@@ -48,6 +57,11 @@ if [ "$1" = "run" ]; then
     CreatePostgressqlConfig
     service postgresql start
     service apache2 restart
+
+    # check if
+    sudo -u renderer openstreetmap-tiles-update-expire 2019-06-03
+
+
 
     # Configure renderd threads
     sed -i -E "s/num_threads=[0-9]+/num_threads=${THREADS:-4}/g" /usr/local/etc/renderd.conf

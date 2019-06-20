@@ -47,6 +47,9 @@ The database use the autovacuum feature by default. This behavior can be changed
 
 You can find an example of the import performance to expect with this image on the [OpenStreetMap wiki](https://wiki.openstreetmap.org/wiki/Osm2pgsql/benchmarks#debian_9_.2F_openstreetmap-tile-server).
 
+## update and tile expire procedure
++ [link](./Doc/Update.md)
+
 ## Troubleshooting
 
 ### ERROR: could not resize shared memory segment / No space left on device

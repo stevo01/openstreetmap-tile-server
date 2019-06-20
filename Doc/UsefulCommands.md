@@ -20,11 +20,8 @@ wget -c -P $(pwd)/volumes/download/  http://download.geofabrik.de/europe/germany
 wget -c -P $(pwd)/volumes/download/  http://download.geofabrik.de/europe-latest.osm.pbf
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf.md5
-
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-190603.osm.pbf
-
 wget -c -P $(pwd)/volumes/download/  https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-190603.osm.pbf.md5
-
 
 
 ```
@@ -64,14 +61,19 @@ docker run --rm -e THREADS=16 --detach --name openstreetmap-tile-server --publis
 
 ### debugging
 
-#### detach to console
+#### show MAP
+http://localhost:8001/
+
+#### show single tile
+http://localhost:8001/tile/16/32741/21794.png
+
+#### show statistic information
+http://localhost:8001/mod_tile
+
+#### attach to console
 ```
 docker exec -i -t openstreetmap-tile-server /bin/bash
 ```
-#### show mod-tile status infos
-
-open following url to show mod-tile status informations
-http://lovcalhost:8001/mod_tile
 
 #### show logging infos from rendered, apache
 docker logs -f openstreetmap-tile-server
@@ -107,6 +109,13 @@ open bash shell on docker and enter following command to prerender zoomlevel 1-8
 ```
 docker exec -i -t openstreetmap-tile-server /bin/bash
 render_list -a -m ajt -z 6 -Z 6 -l 800 -n 12
+
+-a, --all            render all tiles in given zoom level range instead of reading from STDIN
+-m, --map=MAP        render tiles in this map (defaults to 'default')
+-l, --max-load=LOAD  sleep if load is this high (defaults to 16)
+-n, --num-threads=N the number of parallel request threads (default 1)
+-z, --min-zoom=ZOOM  filter input to only render tiles greater or equal to this zoom level (default is 0)
+-Z, --max-zoom=ZOOM  filter input to only render tiles less than or equal to this zoom level (default is 20)
 ```
 
 
