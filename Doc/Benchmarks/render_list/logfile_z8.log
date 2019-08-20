@@ -1,0 +1,29 @@
+time render_list -a -m ajt -z 1 -Z8  -l 800 -n 12
+debug: init_storage_backend: initialising file storage backend at: /var/lib/mod_tile
+Rendering client
+Starting 12 rendering threads
+Rendering all tiles from zoom 1 to zoom 8
+Rendering all tiles for zoom 1 from (0, 0) to (1, 1)
+Rendering all tiles for zoom 2 from (0, 0) to (3, 3)
+Rendering all tiles for zoom 3 from (0, 0) to (7, 7)
+Rendering all tiles for zoom 4 from (0, 0) to (15, 15)
+Rendering all tiles for zoom 5 from (0, 0) to (31, 31)
+Rendering all tiles for zoom 6 from (0, 0) to (63, 63)
+Rendering all tiles for zoom 7 from (0, 0) to (127, 127)
+Rendering all tiles for zoom 8 from (0, 0) to (255, 255)
+Waiting for rendering threads to finish
+
+*****************************************************
+*****************************************************
+Total for all tiles rendered
+Meta tiles rendered: Rendered 1022 tiles in 6635.53 seconds (0.15 tiles/s)
+Total tiles rendered: Rendered 65408 tiles in 6635.53 seconds (9.86 tiles/s)
+Total tiles handled: Rendered 1367 tiles in 6635.53 seconds (0.21 tiles/s)
+*****************************************************
+Zoom 08: min:  0.3    avg: 62.8     max: 5629.7     over a total of  64211.1s in 1022 requests
+*****************************************************
+*****************************************************
+
+real	110m35.551s
+user	0m0.036s
+sys	0m0.192s

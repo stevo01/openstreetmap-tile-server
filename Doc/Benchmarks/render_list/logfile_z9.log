@@ -1,0 +1,30 @@
+root@e38629b35d6e:/home/renderer/src/openstreetmap-carto# time render_list -a -m ajt -z 1 -Z9  -l 800 -n 12
+debug: init_storage_backend: initialising file storage backend at: /var/lib/mod_tile
+Rendering client
+Starting 12 rendering threads
+Rendering all tiles from zoom 1 to zoom 9
+Rendering all tiles for zoom 1 from (0, 0) to (1, 1)
+Rendering all tiles for zoom 2 from (0, 0) to (3, 3)
+Rendering all tiles for zoom 3 from (0, 0) to (7, 7)
+Rendering all tiles for zoom 4 from (0, 0) to (15, 15)
+Rendering all tiles for zoom 5 from (0, 0) to (31, 31)
+Rendering all tiles for zoom 6 from (0, 0) to (63, 63)
+Rendering all tiles for zoom 7 from (0, 0) to (127, 127)
+Rendering all tiles for zoom 8 from (0, 0) to (255, 255)
+Rendering all tiles for zoom 9 from (0, 0) to (511, 511)
+Waiting for rendering threads to finish
+
+*****************************************************
+*****************************************************
+Total for all tiles rendered
+Meta tiles rendered: Rendered 4091 tiles in 4338.87 seconds (0.94 tiles/s)
+Total tiles rendered: Rendered 261824 tiles in 4338.87 seconds (60.34 tiles/s)
+Total tiles handled: Rendered 5463 tiles in 4338.87 seconds (1.26 tiles/s)
+*****************************************************
+Zoom 09: min:  0.3    avg: 12.4     max: 2849.6     over a total of  50542.7s in 4091 requests
+*****************************************************
+*****************************************************
+
+real	72m18.897s
+user	0m0.208s
+sys	0m0.624s

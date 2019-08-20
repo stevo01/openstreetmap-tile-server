@@ -1,0 +1,212 @@
+stevo@stone:/media/data/docker/openstreetmap-tile-server$ docker exec -i -t openstreetmap-tile-server /bin/bash
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# time /usr/bin/openstreetmap-tiles-update-expire
+
+real	12m8.419s
+user	1m7.328s
+sys	0m12.456s
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/log/tiles/
+expiry.log     osm2pgsql.log  osmosis.log    run.log
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/log/tiles/run.log
+[2019-06-14 06:55:32] 2509 start import from seq-nr 3522361, replag is 11 day(s) and 6 hour(s)
+[2019-06-14 06:55:32] 2509 downloading diff
+[2019-06-14 07:06:12] 2509 importing diff
+[2019-06-14 07:07:33] 2509 expiring tiles
+[2019-06-14 07:07:41] 2509 Done with import
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/log/tiles/osmosis.log
+Jun 14, 2019 6:55:32 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Osmosis Version 0.46
+Jun 14, 2019 6:55:33 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Preparing pipeline.
+Jun 14, 2019 6:55:33 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Launching pipeline execution.
+Jun 14, 2019 6:55:33 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Pipeline executing, waiting for completion.
+Jun 14, 2019 7:06:12 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Pipeline complete.
+Jun 14, 2019 7:06:12 AM org.openstreetmap.osmosis.core.Osmosis run
+INFO: Total execution time: 639821 milliseconds.
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/log/tiles/osm2pgsql.log
+osm2pgsql version 0.96.0 (64 bit id space)
+
+Allocating memory for dense node cache
+Allocating dense node cache in one big chunk
+Allocating memory for sparse node cache
+Sharing dense sparse
+Node-cache: cache=2048MB, maxblocks=32768*65536, allocation method=11
+Mid: pgsql, cache=2048
+Using lua based tag processing pipeline with script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua
+Using projection SRS 3857 (Spherical Mercator)
+Setting up table: planet_osm_point
+Setting up table: planet_osm_line
+Setting up table: planet_osm_polygon
+Setting up table: planet_osm_roads
+
+Reading in file: /var/lib/mod_tile/changes.osc.gz
+Using XML parser.
+Large polygon (19523 x 20291 metres, OSM ID 14870875) - only expiring perimeter
+Large polygon (19523 x 20291 metres, OSM ID 14870875) - only expiring perimeter
+Large polygon (10026 x 50705 metres, OSM ID 694095613) - only expiring perimeter
+Large polygon (10026 x 50705 metres, OSM ID 694095613) - only expiring perimeter
+Processing: Node(39k 3.3k/s) Way(6k 0.75k/s) Relation(60 6.67/s)  parse time: 30s
+Node stats: total(39363), max(6517191885) in 12s
+Way stats: total(6024), max(694161008) in 8s
+Relation stats: total(104), max(9647438) in 10s
+
+Going over pending ways...
+	14424 ways are pending
+
+Using 16 helper-processes
+Large polygon (10026 x 50705 metres, OSM ID 694095613) - only expiring perimeter
+Large polygon (10026 x 50705 metres, OSM ID 694095613) - only expiring perimeter
+Large polygon (19523 x 20291 metres, OSM ID 14870875) - only expiring perimeter
+Large polygon (19523 x 20291 metres, OSM ID 14870875) - only expiring perimeter
+Finished processing 14424 ways in 3 s
+
+14424 Pending ways took 3s at a rate of 4808.00/s
+
+Going over pending relations...
+	8396 relations are pending
+
+Using 16 helper-processes
+Large polygon (3818 x 25272 metres, OSM ID -9513351) - only expiring perimeter
+Large polygon (5374 x 25272 metres, OSM ID -9513273) - only expiring perimeter
+Large polygon (3818 x 25272 metres, OSM ID -9513351) - only expiring perimeter
+Large polygon (5374 x 25272 metres, OSM ID -9513273) - only expiring perimeter
+Large polygon (2216567 x 2551289 metres, OSM ID -9451220) - only expiring perimeter
+Large polygon (31159 x 23049 metres, OSM ID -9313072) - only expiring perimeter
+Large polygon (31159 x 23049 metres, OSM ID -9313072) - only expiring perimeter
+Large polygon (88589 x 99543 metres, OSM ID -8792156) - only expiring perimeter
+Large polygon (29675 x 17194 metres, OSM ID -8792156) - only expiring perimeter
+Large polygon (88589 x 99543 metres, OSM ID -8792156) - only expiring perimeter
+Large polygon (29675 x 17194 metres, OSM ID -8792156) - only expiring perimeter
+Large polygon (36006 x 69160 metres, OSM ID -7903240) - only expiring perimeter
+Large polygon (36006 x 69160 metres, OSM ID -7903240) - only expiring perimeter
+Large polygon (26921 x 38711 metres, OSM ID -7042080) - only expiring perimeter
+Large polygon (26921 x 38711 metres, OSM ID -7042080) - only expiring perimeter
+Large polygon (23402 x 33573 metres, OSM ID -7068592) - only expiring perimeter
+Large polygon (23402 x 33573 metres, OSM ID -7068592) - only expiring perimeter
+Large polygon (52211 x 35227 metres, OSM ID -5377951) - only expiring perimeter
+Large polygon (52211 x 35227 metres, OSM ID -5377951) - only expiring perimeter
+Large polygon (101467 x 92452 metres, OSM ID -5175803) - only expiring perimeter
+Large polygon (101467 x 92452 metres, OSM ID -5175803) - only expiring perimeter
+Large polygon (20448 x 1943 metres, OSM ID -3958527) - only expiring perimeter
+Large polygon (75724 x 80699 metres, OSM ID -3882103) - only expiring perimeter
+Large polygon (20448 x 1943 metres, OSM ID -3958527) - only expiring perimeter
+Large polygon (75724 x 80699 metres, OSM ID -3882103) - only expiring perimeter
+Large polygon (18649 x 25575 metres, OSM ID -3240402) - only expiring perimeter
+Large polygon (18649 x 25575 metres, OSM ID -3240402) - only expiring perimeter
+Large polygon (257207 x 265627 metres, OSM ID -3158894) - only expiring perimeter
+Large polygon (111657 x 113222 metres, OSM ID -3146299) - only expiring perimeter
+Large polygon (139962 x 123400 metres, OSM ID -3146719) - only expiring perimeter
+Large polygon (108805 x 79493 metres, OSM ID -3146252) - only expiring perimeter
+Large polygon (111657 x 113222 metres, OSM ID -3146299) - only expiring perimeter
+Large polygon (108805 x 79493 metres, OSM ID -3146252) - only expiring perimeter
+Large polygon (139962 x 123400 metres, OSM ID -3146719) - only expiring perimeter
+Large polygon (22770 x 17707 metres, OSM ID -2981899) - only expiring perimeter
+Large polygon (22770 x 17707 metres, OSM ID -2981899) - only expiring perimeter
+Large polygon (24667 x 27419 metres, OSM ID -2909845) - only expiring perimeter
+Large polygon (83897 x 51828 metres, OSM ID -2915930) - only expiring perimeter
+Large polygon (24667 x 16700 metres, OSM ID -2900086) - only expiring perimeter
+Large polygon (24667 x 27419 metres, OSM ID -2909845) - only expiring perimeter
+Large polygon (24667 x 16700 metres, OSM ID -2900086) - only expiring perimeter
+Large polygon (49170 x 50174 metres, OSM ID -2917549) - only expiring perimeter
+Large polygon (35638 x 18955 metres, OSM ID -2881805) - only expiring perimeter
+Large polygon (35638 x 18955 metres, OSM ID -2881805) - only expiring perimeter
+Large polygon (28736 x 17451 metres, OSM ID -2820020) - only expiring perimeter
+Large polygon (28736 x 17451 metres, OSM ID -2820020) - only expiring perimeter
+Large polygon (83897 x 51828 metres, OSM ID -2915930) - only expiring perimeter
+Large polygon (257207 x 265627 metres, OSM ID -3158894) - only expiring perimeter
+Large polygon (49170 x 50174 metres, OSM ID -2917549) - only expiring perimeter
+Large polygon (21870 x 28875 metres, OSM ID -2498408) - only expiring perimeter
+Large polygon (81701 x 98665 metres, OSM ID -2497975) - only expiring perimeter
+Large polygon (21870 x 28875 metres, OSM ID -2498408) - only expiring perimeter
+Large polygon (81701 x 98665 metres, OSM ID -2497975) - only expiring perimeter
+Large polygon (541379 x 558380 metres, OSM ID -2145268) - only expiring perimeter
+Large polygon (56328 x 53574 metres, OSM ID -1740869) - only expiring perimeter
+Large polygon (56328 x 53574 metres, OSM ID -1740869) - only expiring perimeter
+Large polygon (541379 x 558380 metres, OSM ID -2145268) - only expiring perimeter
+Large polygon (25560 x 31305 metres, OSM ID -1542241) - only expiring perimeter
+Large polygon (25560 x 31305 metres, OSM ID -1542241) - only expiring perimeter
+Large polygon (20705 x 12925 metres, OSM ID -1180149) - only expiring perimeter
+Large polygon (20705 x 12925 metres, OSM ID -1180149) - only expiring perimeter
+Large polygon (42173 x 30016 metres, OSM ID -1138628) - only expiring perimeter
+Large polygon (42173 x 30016 metres, OSM ID -1138628) - only expiring perimeter
+Large polygon (45693 x 30969 metres, OSM ID -1138613) - only expiring perimeter
+Large polygon (12616 x 22173 metres, OSM ID -1135856) - only expiring perimeter
+Large polygon (12616 x 22173 metres, OSM ID -1135856) - only expiring perimeter
+Large polygon (45693 x 30969 metres, OSM ID -1138613) - only expiring perimeter
+Large polygon (466935 x 309590 metres, OSM ID -415048) - only expiring perimeter
+Large polygon (466935 x 309590 metres, OSM ID -415048) - only expiring perimeter
+Large polygon (20705 x 12925 metres, OSM ID -386919) - only expiring perimeter
+Large polygon (20705 x 12925 metres, OSM ID -386919) - only expiring perimeter
+Large polygon (196277 x 230303 metres, OSM ID -286675) - only expiring perimeter
+Large polygon (196277 x 230303 metres, OSM ID -286675) - only expiring perimeter
+Large polygon (40601 x 35022 metres, OSM ID -186579) - only expiring perimeter
+Large polygon (40601 x 35022 metres, OSM ID -186579) - only expiring perimeter
+Large polygon (292207 x 158799 metres, OSM ID -72526) - only expiring perimeter
+Large polygon (76965 x 64285 metres, OSM ID -62739) - only expiring perimeter
+Large polygon (72984 x 79493 metres, OSM ID -62700) - only expiring perimeter
+Large polygon (72984 x 79493 metres, OSM ID -62700) - only expiring perimeter
+Large polygon (79873 x 80410 metres, OSM ID -62618) - only expiring perimeter
+Large polygon (76965 x 64285 metres, OSM ID -62739) - only expiring perimeter
+Large polygon (274300 x 396292 metres, OSM ID -62650) - only expiring perimeter
+Large polygon (309156 x 255156 metres, OSM ID -62366) - only expiring perimeter
+Large polygon (79873 x 80410 metres, OSM ID -62618) - only expiring perimeter
+Large polygon (292207 x 158799 metres, OSM ID -72526) - only expiring perimeter
+Large polygon (73445 x 52329 metres, OSM ID -59002) - only expiring perimeter
+Large polygon (73445 x 52329 metres, OSM ID -59002) - only expiring perimeter
+Large polygon (2013828 x 1374919 metres, OSM ID -60199) - only expiring perimeter
+Large polygon (394901 x 493699 metres, OSM ID -58974) - only expiring perimeter
+Large polygon (274300 x 396292 metres, OSM ID -62650) - only expiring perimeter
+Large polygon (309156 x 255156 metres, OSM ID -62366) - only expiring perimeter
+Large polygon (211980 x 187873 metres, OSM ID -17585) - only expiring perimeter
+Large polygon (211980 x 187873 metres, OSM ID -17585) - only expiring perimeter
+Large polygon (394901 x 493699 metres, OSM ID -58974) - only expiring perimeter
+Large polygon (2013828 x 1374919 metres, OSM ID -60199) - only expiring perimeter
+Large polygon (2216567 x 2551289 metres, OSM ID -9451220) - only expiring perimeter
+Finished processing 8396 relations in 25 s
+
+8396 Pending relations took 25s at a rate of 335.84/s
+Completed planet_osm_point
+Completed planet_osm_line
+Completed planet_osm_roads
+Completed planet_osm_polygon
+Writing dirty tile list (15800K)Stopping table: planet_osm_nodes
+Stopping table: planet_osm_ways
+Stopping table: planet_osm_rels
+Stopped table: planet_osm_nodes in 0s
+Stopped table: planet_osm_ways in 0s
+Stopped table: planet_osm_rels in 0s
+
+Osm2pgsql took 79s overall
+node cache: stored: 39363(100.00%), storage efficiency: 65.67% (dense blocks: 5, sparse nodes: 9491), hit rate: 2.71%
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/log/tiles/expiry.log
+Total for all tiles rendered
+Meta tiles rendered: Rendered 0 tiles in 7.79 seconds (0.00 tiles/s)
+Total tiles rendered: Rendered 0 tiles in 7.79 seconds (0.00 tiles/s)
+Total tiles in input: 15800883
+Total tiles expanded from input: 1504931
+Total meta tiles deleted: 0
+Total meta tiles touched: 2
+Total tiles ignored (not on disk): 1504929
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/lib/mod_tile/.osmosis/state.txt
+#Fri Jun 14 07:06:12 UTC 2019
+sequenceNumber=3522421
+timestamp=2019-06-03T00\:59\:02Z
+
+root@65f60c937ec8:/home/renderer/src/openstreetmap-carto# cat /var/lib/mod_tile/.osmosis/last.state.txt
+#original-source: http://planet.openstreetmap.org/replication/minute/003/522/361.state.txt
+#generated-by: https://replicate-sequences.osm.mazdermind.de/?2019-06-03T00:00:00Z
+#Sun Jun 02 23:59:02 UTC 2019
+sequenceNumber=3522361
+txnMaxQueried=2144529807
+txnActiveList=
+txnReadyList=
+txnMax=2144529807
+timestamp=2019-06-02T23\:59\:02Z

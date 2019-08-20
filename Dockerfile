@@ -7,6 +7,7 @@ FROM ubuntu:18.04
 ENV TZ=UTC
 ENV AUTOVACUUM=on
 ENV UPDATES=disabled
+ENV NCACHE=2048
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install dependencies
@@ -68,6 +69,7 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   osmium-tool \
   cron \
   python3-psycopg2 python3-shapely python3-lxml \
+  dstat \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
 && rm -rf /var/lib/{apt,dpkg,cache,log}/
@@ -158,6 +160,10 @@ RUN cd ~/src \
     && cd regional \
     && git checkout 612fe3e040d8bb70d2ab3b133f3b2cfc6c940520 \
     && chmod u+x ~/src/regional/trim_osc.py
+
+# create directory for dstat logging
+USER root
+RUN mkdir /var/log/dstat
 
 # Start running
 USER root

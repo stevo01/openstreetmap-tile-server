@@ -17,10 +17,15 @@ if [ "$#" -ne 1 ]; then
     echo "environment variables:"
     echo "    THREADS: defines number of threads used for importing / tile rendering"
     echo "    UPDATES: consecutive updates (enabled/disabled)"
+    echo "    NCACHE: cache to store all imported nodes"
     exit 1
 fi
 
 if [ "$1" = "import" ]; then
+
+    # start dstat logging
+    dstat -m -c -r -s --output /var/log/dstat/dstat_import.cvs > /dev/null 2>&1 &
+
     # Initialize PostgreSQL
     CreatePostgressqlConfig
     service postgresql start
@@ -51,13 +56,28 @@ if [ "$1" = "import" ]; then
         sudo -u renderer cp /data.poly /var/lib/mod_tile/data.poly
     fi
 
+    sudo chown renderer:renderer /flat
+
     # Import data
-    sudo -u renderer osm2pgsql -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua -C 2048 --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf
+    sudo -u renderer osm2pgsql -d gis \
+                               --create \
+                               --slim \
+                               -G \
+                               --hstore \
+                               --flat-nodes /flat/osm.flat.cache  \
+                               --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua \
+                               -C ${NCACHE} \
+                               --number-processes ${THREADS:-4} \
+                               -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style \
+                               /data.osm.pbf
 
     # Create indexes
     sudo -u postgres psql -d gis -f indexes.sql
 
     service postgresql stop
+
+    # stop dstat logging
+    killall dstat
 
     exit 0
 fi
@@ -65,7 +85,7 @@ fi
 if [ "$1" = "run" ]; then
     # Clean /tmp
     rm -rf /tmp/*
-    
+
     # Fix postgres data privileges
     chown postgres:postgres /var/lib/postgresql -R
 
