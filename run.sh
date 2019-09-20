@@ -90,7 +90,9 @@ if [ "$1" = "run" ]; then
     fi
 
     # Run
-    sudo -u renderer renderd -f -c /usr/local/etc/renderd.conf
+    # sudo -u renderer renderd -f -c /usr/local/etc/renderd.conf
+
+    sleep 360000
     service postgresql stop
 
     exit 0

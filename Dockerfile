@@ -162,6 +162,11 @@ RUN cd ~/src \
 
 # Start running
 USER root
+
+# Install dependencies
+RUN apt-get install -y --no-install-recommends --allow-unauthenticated \
+  valgrind htop mc nano
+
 COPY run.sh /
 COPY indexes.sql /
 ENTRYPOINT ["/run.sh"]
