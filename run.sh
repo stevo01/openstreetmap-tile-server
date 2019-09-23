@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 
 function CreatePostgressqlConfig()
 {
@@ -89,6 +89,48 @@ if [ "$1" = "run" ]; then
 
     # Run
     sudo -u renderer renderd -f -c /usr/local/etc/renderd.conf
+    service postgresql stop
+
+    exit 0
+fi
+
+if [ "$1" = "debug" ]; then
+    # Clean /tmp
+    rm -rf /tmp/*
+
+    # Fix postgres data privileges
+    chown postgres:postgres /var/lib/postgresql -R
+
+    # Configure Apache CORS
+    if [ "$ALLOW_CORS" == "1" ]; then
+        echo "export APACHE_ARGUMENTS='-D ALLOW_CORS'" >> /etc/apache2/envvars
+    fi
+
+    # Initialize PostgreSQL and Apache
+    CreatePostgressqlConfig
+    service rsyslog start
+    service postgresql start
+    service apache2 restart
+
+    # start tirex
+    sudo -u renderer tirex-backend-manager
+    sudo -u renderer tirex-master
+
+    # Run
+    while sleep 60; do
+      ps aux |grep postgres |grep -q -v grep
+      PROCESS_1_STATUS=$?
+      ps aux |grep apache2 |grep -q -v grep
+      PROCESS_2_STATUS=$?
+      # If the greps above find anything, they exit with 0 status
+      # If they are not both 0, then something is wrong
+      if [ $PROCESS_1_STATUS -ne 0 -o $PROCESS_2_STATUS -ne 0 ]; then
+        echo "One of the processes has already exited."
+        sleep 360000
+        break
+      fi
+    done
+
     service postgresql stop
 
     exit 0

@@ -68,9 +68,11 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   osmium-tool \
   cron \
   python3-psycopg2 python3-shapely python3-lxml \
+  libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts \
+  nano mc psmisc \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
-&& rm -rf /var/lib/{apt,dpkg,cache,log}/
+&& rm -rf /var/lib/{apt,dpkg,cache,log}
 
 # Set up renderer user
 RUN adduser --disabled-password --gecos "" renderer
@@ -161,6 +163,39 @@ RUN cd ~/src \
     && cd regional \
     && git checkout 612fe3e040d8bb70d2ab3b133f3b2cfc6c940520 \
     && chmod u+x ~/src/regional/trim_osc.py
+
+
+USER renderer
+WORKDIR /home/renderer/src
+RUN git clone https://github.com/openstreetmap/tirex.git
+WORKDIR /home/renderer/src/tirex
+RUN make
+
+USER root
+RUN make install
+RUN  mkdir /var/lib/tirex \
+  && mkdir /var/log/tirex \
+  && mkdir /var/run/tirex \
+  && chown renderer:renderer /var/lib/tirex \
+  && chown renderer:renderer /var/run/tirex \
+  && chown renderer:renderer /var/log/tirex
+
+COPY ajt.conf /etc/tirex/renderer/mapnik/
+COPY mapnik.conf /etc/tirex/renderer/
+
+RUN ln -s /var/lib/mod_tile  /var/lib/tirex/tiles 
+
+RUN apt-get install -y --no-install-recommends --allow-unauthenticated \
+    rsyslog htop
+	
+RUN sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+
+RUN    rm -fr /etc/tirex/renderer/openseamap \
+	&& rm -fr /etc/tirex/renderer/wms \
+	&& rm -fr /etc/tirex/renderer/mapserver \
+	&& rm -fr /etc/tirex/renderer/openseamap.conf \
+	&& rm -fr /etc/tirex/renderer/wms.conf \
+	&& rm -fr /etc/tirex/renderer/mapserver.conf 
 
 # Start running
 USER root
