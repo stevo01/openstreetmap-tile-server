@@ -164,7 +164,7 @@ RUN cd ~/src \
     && git checkout 612fe3e040d8bb70d2ab3b133f3b2cfc6c940520 \
     && chmod u+x ~/src/regional/trim_osc.py
 
-
+# clone, build and install tirex
 USER renderer
 WORKDIR /home/renderer/src
 RUN git clone https://github.com/openstreetmap/tirex.git
@@ -183,19 +183,15 @@ RUN  mkdir /var/lib/tirex \
 COPY ajt.conf /etc/tirex/renderer/mapnik/
 COPY mapnik.conf /etc/tirex/renderer/
 
-RUN ln -s /var/lib/mod_tile  /var/lib/tirex/tiles 
+RUN ln -s /var/lib/mod_tile  /var/lib/tirex/tiles
 
-RUN apt-get install -y --no-install-recommends --allow-unauthenticated \
-    rsyslog htop
-	
-RUN sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-
-RUN    rm -fr /etc/tirex/renderer/openseamap \
+# remove not required tirex sample renderer and maps
+RUN  rm -fr /etc/tirex/renderer/openseamap \
 	&& rm -fr /etc/tirex/renderer/wms \
 	&& rm -fr /etc/tirex/renderer/mapserver \
 	&& rm -fr /etc/tirex/renderer/openseamap.conf \
 	&& rm -fr /etc/tirex/renderer/wms.conf \
-	&& rm -fr /etc/tirex/renderer/mapserver.conf 
+	&& rm -fr /etc/tirex/renderer/mapserver.conf
 
 # Start running
 USER root
