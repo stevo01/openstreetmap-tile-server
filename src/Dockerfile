@@ -5,9 +5,6 @@ FROM ubuntu:18.04
 
 # Set up environment
 ENV TZ=UTC
-ENV AUTOVACUUM=on
-ENV UPDATES=disabled
-ENV RENDERERAPP=renderd
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install dependencies
@@ -52,53 +49,36 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   mapnik-utils \
   nodejs \
   npm \
-  postgis \
-  postgresql-10 \
-  postgresql-10-postgis-2.5 \
-  postgresql-10-postgis-2.5-scripts \
-  postgresql-contrib-10 \
   protobuf-c-compiler \
   python-mapnik \
+  python-pip \
+  python-setuptools \
   sudo \
   tar \
   ttf-unifont \
   unzip \
   wget \
   zlib1g-dev \
-  osmosis \
-  osmium-tool \
-  cron \
-  python3-psycopg2 python3-shapely python3-lxml \
-  libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts \
   nano mc psmisc \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
 && rm -rf /var/lib/{apt,dpkg,cache,log}
 
+RUN pip install pyyaml
+
 # Set up renderer user
 RUN adduser --disabled-password --gecos "" renderer
-USER renderer
-
-# Install latest osm2pgsql
-RUN mkdir /home/renderer/src
-WORKDIR /home/renderer/src
-RUN git clone https://github.com/openstreetmap/osm2pgsql.git
-WORKDIR /home/renderer/src/osm2pgsql
-RUN mkdir build
-WORKDIR /home/renderer/src/osm2pgsql/build
-RUN cmake .. \
-  && make -j $(nproc)
-USER root
-RUN make install
-RUN mkdir /nodes \
-    && chown renderer:renderer /nodes
 USER renderer
 
 # Install and test Mapnik
 RUN python -c 'import mapnik'
 
 # Install mod_tile and renderd
+USER root
 WORKDIR /home/renderer/src
+RUN mkdir -p /home/renderer/src \
+    && chown renderer:renderer /home/renderer/src
+USER renderer
 RUN git clone -b switch2osm https://github.com/SomeoneElseOSM/mod_tile.git
 WORKDIR /home/renderer/src/mod_tile
 RUN ./autogen.sh \
@@ -114,9 +94,11 @@ USER renderer
 WORKDIR /home/renderer/src
 RUN git clone https://github.com/gravitystorm/openstreetmap-carto.git \
  && git -C openstreetmap-carto checkout v4.23.0
+
 WORKDIR /home/renderer/src/openstreetmap-carto
 USER root
-RUN npm install -g carto@0.18.2
+# RUN npm install -g carto@0.18.2
+RUN npm install -g carto
 USER renderer
 RUN carto project.mml > mapnik.xml
 
@@ -143,30 +125,6 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 COPY leaflet-demo.html /var/www/html/index.html
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
   && ln -sf /dev/stderr /var/log/apache2/error.log
-
-# Configure PosgtreSQL
-COPY postgresql.custom.conf.tmpl /etc/postgresql/10/main/
-RUN chown -R postgres:postgres /var/lib/postgresql \
-  && chown postgres:postgres /etc/postgresql/10/main/postgresql.custom.conf.tmpl \
-  && echo "\ninclude 'postgresql.custom.conf'" >> /etc/postgresql/10/main/postgresql.conf
-RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/10/main/pg_hba.conf \
-      && echo "host all all ::/0 md5" >> /etc/postgresql/10/main/pg_hba.conf
-
-# copy update scripts
-COPY openstreetmap-tiles-update-expire /usr/bin/
-RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
-    && mkdir /var/log/tiles \
-    && chmod a+rw /var/log/tiles \
-    && ln -s /home/renderer/src/mod_tile/osmosis-db_replag /usr/bin/osmosis-db_replag \
-    && echo "*  *    * * *   renderer    openstreetmap-tiles-update-expire\n" >> /etc/crontab
-
-# install trim_osc.py helper script
-USER renderer
-RUN cd ~/src \
-    && git clone https://github.com/zverik/regional \
-    && cd regional \
-    && git checkout 612fe3e040d8bb70d2ab3b133f3b2cfc6c940520 \
-    && chmod u+x ~/src/regional/trim_osc.py
 
 # clone, build and install tirex
 # according to fpllowing wiki article:
@@ -206,8 +164,7 @@ RUN  rm -fr /etc/tirex/renderer/openseamap \
 # Start running
 USER root
 COPY run.sh /
-COPY indexes.sql /
 ENTRYPOINT ["/run.sh"]
 CMD []
 
-EXPOSE 80 5432
+EXPOSE 80
