@@ -60,6 +60,7 @@ RUN echo "deb [ allow-insecure=yes ] http://apt.postgresql.org/pub/repos/apt/ bi
   wget \
   zlib1g-dev \
   nano mc psmisc \
+  libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
 && rm -rf /var/lib/{apt,dpkg,cache,log}
@@ -95,6 +96,9 @@ WORKDIR /home/renderer/src
 RUN git clone https://github.com/gravitystorm/openstreetmap-carto.git \
  && git -C openstreetmap-carto checkout v4.23.0
 
+# copy project.mml file to carto working dir
+COPY project.mml /home/renderer/src/openstreetmap-carto
+
 WORKDIR /home/renderer/src/openstreetmap-carto
 USER root
 # RUN npm install -g carto@0.18.2
@@ -114,8 +118,8 @@ USER renderer
 
 # Configure Apache
 USER root
-RUN mkdir /var/lib/mod_tile \
-  && chown renderer /var/lib/mod_tile \
+RUN  mkdir /var/lib/mod_tile \
+  && chown renderer:renderer /var/lib/mod_tile \
   && mkdir /var/run/renderd \
   && chown renderer /var/run/renderd
 RUN echo "LoadModule tile_module /usr/lib/apache2/modules/mod_tile.so" >> /etc/apache2/conf-available/mod_tile.conf \
@@ -141,11 +145,11 @@ RUN make install
 RUN  mkdir /var/lib/tirex \
   && mkdir /var/log/tirex \
   && mkdir /var/run/tirex \
-  && mkdir /var/lib/mod_tile/ajx \
+  && mkdir /var/lib/mod_tile/ajt \
   && chown renderer:renderer /var/lib/tirex \
   && chown renderer:renderer /var/run/tirex \
   && chown renderer:renderer /var/log/tirex \
-  && chown renderer /var/lib/mod_tile/ajx
+  && chown renderer /var/lib/mod_tile/ajt
 
 COPY ajt.conf /etc/tirex/renderer/mapnik/
 COPY mapnik.conf /etc/tirex/renderer/
