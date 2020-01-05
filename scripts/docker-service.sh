@@ -6,17 +6,28 @@ set -x
 
 IMAGE_NAME="osm-tileserver"
 
+HOSTNAME=$(cat /etc/hostname)
+
+if  [ $HOSTNAME == "stone" ]
+  then
+    WEBSERVERPORT=8001
+  else
+    WEBSERVERPORT=80
+fi
+
 function start() {
   docker run \
-  		--name $IMAGE_NAME \
-  		--rm=false \
-  		--detach \
+      --name $IMAGE_NAME \
+      --rm=false \
+      --detach \
       --hostname osmtileserver \
       --link osm-tileserver-db:osm-tileserver-db \
-      -v openstreetmap-tilecache:/var/lib/mod_tile \
+      --shm-size=6G \
+      --publish $WEBSERVERPORT:80 \
       -v $PWD/volumes/transfer:/transfer \
-  		$IMAGE_NAME \
-  		run
+      -v openstreetmap-tilecache:/var/lib/mod_tile \
+      $IMAGE_NAME \
+      run
 }
 
 function stop() {
