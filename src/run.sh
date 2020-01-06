@@ -62,6 +62,12 @@ if [ "$1" = "run" ]; then
     # Start Apache
     service apache2 restart
 
+    # create file planet-import-complete if not excists
+    # https://help.openstreetmap.org/questions/14932/why-are-the-cache-duration-settings-configured-in-mod_tile-being-ignored
+    if [ ! -f /var/lib/mod_tile/planet-import-complete  ]; then
+      touch -a -m -t 200001010000 /var/lib/mod_tile/planet-import-complete
+    fi
+
     # start tirex
     sudo -u renderer tirex-backend-manager -f &
     sudo -u renderer tirex-master -d -f &
