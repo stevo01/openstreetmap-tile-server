@@ -4,16 +4,7 @@
 
 set -x
 
-IMAGE_NAME="osm-tileserver"
-
-HOSTNAME=$(cat /etc/hostname)
-
-if  [ $HOSTNAME == "stone" ]
-  then
-    WEBSERVERPORT=8001
-  else
-    WEBSERVERPORT=80
-fi
+IMAGE_NAME="osmtileserver"
 
 function start() {
   docker run \
@@ -23,12 +14,25 @@ function start() {
       --hostname osmtileserver \
       --link osm-tileserver-db:osm-tileserver-db \
       --shm-size=6G \
-      --publish $WEBSERVERPORT:80 \
       -v $PWD/volumes/transfer:/transfer \
       -v openstreetmap-tilecache:/var/lib/mod_tile \
-      $IMAGE_NAME \
+      --label "traefik.enable=true" \
+      --label "traefik.http.routers.osmtileserver.entrypoints=http" \
+      --label "traefik.http.routers.osmtileserver.rule=Host(\`t2.openseamap.eu\`)" \
+      --label "traefik.http.middlewares.osmtileserver-https-redirect.redirectscheme.scheme=https" \
+      --label "traefik.http.routers.osmtileserver.middlewares=osmtileserver-https-redirect" \
+      --label "traefik.http.routers.osmtileserver-secure.entrypoints=https" \
+      --label "traefik.http.routers.osmtileserver-secure.rule=Host(\`t2.openseamap.eu\`)" \
+      --label "traefik.http.routers.osmtileserver-secure.tls=true" \
+      --label "traefik.http.routers.osmtileserver-secure.tls.certresolver=http" \
+      --label "traefik.http.routers.osmtileserver-secure.service=osmtileserver" \
+      --label "traefik.http.services.osmtileserver.loadbalancer.server.port=80" \
+      --label "traefik.docker.network=proxy" \
+      --network proxy $IMAGE_NAME \
       run
 }
+
+# --publish 8001:80
 
 function stop() {
   docker container stop $IMAGE_NAME
