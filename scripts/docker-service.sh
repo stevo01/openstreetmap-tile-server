@@ -18,18 +18,22 @@ function start() {
       -v openstreetmap-tilecache:/var/lib/mod_tile \
       --label "traefik.enable=true" \
       --label "traefik.http.routers.osmtileserver.entrypoints=http" \
-      --label "traefik.http.routers.osmtileserver.rule=Host(\`t2.openseamap.eu\`)" \
+      --label "traefik.http.routers.osmtileserver.rule=Host(\`t2.openseamap.org\`)" \
       --label "traefik.http.middlewares.osmtileserver-https-redirect.redirectscheme.scheme=https" \
       --label "traefik.http.routers.osmtileserver.middlewares=osmtileserver-https-redirect" \
       --label "traefik.http.routers.osmtileserver-secure.entrypoints=https" \
-      --label "traefik.http.routers.osmtileserver-secure.rule=Host(\`t2.openseamap.eu\`)" \
+      --label "traefik.http.routers.osmtileserver-secure.rule=Host(\`t2.openseamap.org\`)" \
       --label "traefik.http.routers.osmtileserver-secure.tls=true" \
       --label "traefik.http.routers.osmtileserver-secure.tls.certresolver=http" \
       --label "traefik.http.routers.osmtileserver-secure.service=osmtileserver" \
       --label "traefik.http.services.osmtileserver.loadbalancer.server.port=80" \
       --label "traefik.docker.network=proxy" \
+      --label  "traefik.http.routers.osmtileserver.middlewares=cors-headers@docker" \
+      --label  "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginList=*" \
+      --label  "traefik.http.middlewares.cors-headers.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization" \
+      --label  "traefik.http.middlewares.cors-headers.headers.accessControlAllowMethods=GET, POST, PUT, DELETE, OPTIONS" \
       --network proxy $IMAGE_NAME \
-      run
+      run 
 }
 
 # --publish 8001:80
