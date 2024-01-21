@@ -7,15 +7,16 @@ FROM ubuntu:18.04
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Install dependencies
+# get update from package manager abd install first dependencies
 RUN apt-get update \
-  && apt-get install -y wget gnupg2 lsb-core apt-transport-https ca-certificates curl \
-  && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-  && echo "deb [ trusted=yes ] https://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list \
-  && wget --quiet -O - https://deb.nodesource.com/setup_10.x | bash - \
+  && apt-get install -y wget gnupg2 lsb-core apt-transport-https ca-certificates curl 
+
+# Install nodejs
+RUN wget --quiet -O - https://deb.nodesource.com/setup_10.x | bash - \
   && apt-get update \
   && apt-get install -y nodejs
 
+# Install dependencies
 RUN apt-get install -y --no-install-recommends --allow-unauthenticated \
   apache2 \
   apache2-dev \
@@ -63,10 +64,7 @@ RUN apt-get install -y --no-install-recommends --allow-unauthenticated \
   wget \
   zlib1g-dev \
   nano mc psmisc \
-  libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts \
-&& apt-get clean autoclean \
-&& apt-get autoremove --yes \
-&& rm -rf /var/lib/{apt,dpkg,cache,log}
+  libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts 
 
 RUN pip install pyyaml
 
@@ -94,10 +92,10 @@ RUN make -j $(nproc) install \
   && ldconfig
 USER renderer
 
-# Configure stylesheet
+# Configure stylesheet / v4.23.0
 WORKDIR /home/renderer/src
-RUN git clone https://github.com/gravitystorm/openstreetmap-carto.git \
- && git -C openstreetmap-carto checkout v4.23.0
+RUN git clone https://github.com/OpenSeaMap/openstreetmap-carto.git \
+ && git -C openstreetmap-carto checkout stevo.dev
 
 # copy project.mml file to carto working dir
 COPY project.mml /home/renderer/src/openstreetmap-carto
@@ -167,6 +165,11 @@ RUN  rm -fr /etc/tirex/renderer/openseamap \
 	&& rm -fr /etc/tirex/renderer/openseamap.conf \
 	&& rm -fr /etc/tirex/renderer/wms.conf \
 	&& rm -fr /etc/tirex/renderer/mapserver.conf
+
+# cleanup apt
+RUN apt-get clean autoclean \
+&& apt-get autoremove --yes \
+&& rm -rf /var/lib/{apt,dpkg,cache,log}
 
 # Start running
 USER root
