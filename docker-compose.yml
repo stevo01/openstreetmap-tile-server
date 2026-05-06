@@ -1,15 +1,39 @@
-version: '3'
 services:
-  osmtileserver:
-    # tileserver (apache/mod-tile/tirex/mapnik)
-    image: osm-tileserver:1.1
-    build: ./src/
+  tirex:
+    # tirex + mapnik (renderer)
+    image: osm-tileserver-tirex:1.0
+    build: ./src_tirex/
 
     volumes:
-      - ./volumes/transfer:/transfer
-      - ./volumes/etc/apache2/sites-available/apache.conf:/etc/apache2/sites-available/000-default.conf
-      - ./volumes/log/appache:/var/log/appache
-      - openstreetmap-tilecache:/var/lib/mod_tile
+      - ./volumes/shared/transfer:/transfer
+      - ./volumes/shared/var/run/renderd:/var/run/renderd
+      - /media/hdd/openstreetmap-tilecache:/var/lib/mod_tile
+
+    hostname: osmtileserver-tirex
+
+    external_links:
+      - osm-tileserver-db:osm-tileserver-db
+
+    command: run
+
+    networks:
+      - proxy
+      - tile-postgis-network
+
+  web:
+    # apache + mod_tile (web frontend)
+    image: osm-tileserver-web:1.0
+    build: ./src_apache/
+
+    volumes:
+      - ./volumes/web/etc/apache2/sites-available/apache.conf:/etc/apache2/sites-available/000-default.conf
+      - ./volumes/web/etc/apache2/conf-available/mod_tile.conf:/etc/apache2/conf-available/mod_tile.conf
+      - ./volumes/web/usr/local/etc/renderd.conf:/usr/local/etc/renderd.conf
+      - ./volumes/web/log/apache:/var/log/apache
+      - ./volumes/web/www/index.html:/var/www/html/index.html
+
+      - ./volumes/shared/var/run/renderd:/var/run/renderd
+      - /media/hdd/openstreetmap-tilecache:/var/lib/mod_tile
 
     hostname: osmtileserver
 
@@ -18,26 +42,12 @@ services:
 
     command: run
 
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.osmtileserver.entrypoints=http"
-      - "traefik.http.routers.osmtileserver.rule=Host(`t2.openseamap.org`)"
-      - "traefik.http.middlewares.osmtileserver-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.osmtileserver.middlewares=osmtileserver-https-redirect"
-      - "traefik.http.routers.osmtileserver-secure.entrypoints=https"
-      - "traefik.http.routers.osmtileserver-secure.rule=Host(`t2.openseamap.org`)"
-      - "traefik.http.routers.osmtileserver-secure.tls=true" 
-      - "traefik.http.routers.osmtileserver-secure.tls.certresolver=http" 
-      - "traefik.http.routers.osmtileserver-secure.service=osmtileserver" 
-      - "traefik.http.services.osmtileserver.loadbalancer.server.port=80" 
-      - "traefik.docker.network=proxy" 
-      - "traefik.http.routers.osmtileserver.middlewares=cors-headers@docker" 
-      - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginList=*" 
-      - "traefik.http.middlewares.cors-headers.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization" 
-      - "traefik.http.middlewares.cors-headers.headers.accessControlAllowMethods=GET, POST, PUT, DELETE, OPTIONS"
-    
+    ports:
+      - 80:80 
+
     networks:
       - proxy
+      - tile-postgis-network
 
 volumes:
   openstreetmap-tilecache:
@@ -46,3 +56,5 @@ volumes:
 networks:
   proxy:
     external: true
+  tile-postgis-network:
+    external: true    
